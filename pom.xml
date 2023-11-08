@@ -6,7 +6,33 @@
 
     <groupId>org.example</groupId>
     <artifactId>TP1_Service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>G09TP1</groupId>
+            <artifactId>TP1RegisterService</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>G09TP1</groupId>
+            <artifactId>TP1ContractClientService</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java</artifactId>
+            <version>3.3.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-transport-httpclient5</artifactId>
+            <version>3.2.14</version>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
