@@ -20,21 +20,20 @@ import io.grpc.ServerBuilder;
 public class Main{
 
     private static String svcIp; private static int svcPort;
-    //private static String svcIp = "34.175.157.230"; private static int svcPort = 8500;
-    //private static String svcIp = "localhost"; private static int svcPort = 8500;
     private static String myIp; private static int myPort;
-    //private static String myIp = "1"; private static int myPort = 1;
     private static RegisterServiceGrpc.RegisterServiceBlockingStub registerServiceBlockingStub;
     private static ManagedChannel registerChannel;
     private static final String volumePath = "/usr/datafiles";
     private static String pathVolDir;
     private static DockerClient dockerClient;
 
+    private static HostConfig hostConfig;
+
 
     //args[0] = unix:///var/run/docker.sock
     //args[1] = 320.120.3.1:1500 -> register address
     //args[2] = 320.120.3.1:7500 -> my address
-    //args[3] = /usr/...         -> diretoria do volume
+    //args[3] = /var/...         -> diretoria do volume
     public static void main(String[] args) {
         try{
             String HOST_URI;
@@ -45,7 +44,8 @@ public class Main{
                 myIp = getSvcIp(args[2]);
                 myPort = getSvcPort(args[2]);
                 pathVolDir = args[3];
-            }else{
+            }
+            else{
                 System.out.println("Invalid number of arguments");
                 return;
             }
@@ -58,7 +58,7 @@ public class Main{
                                     .dockerHost(URI.create(HOST_URI)).build()
                     )
                     .build();
-            HostConfig hostConfig = HostConfig.newHostConfig()
+            hostConfig = HostConfig.newHostConfig()
                     .withBinds(new Bind(pathVolDir, new Volume(volumePath)));
 
 
@@ -87,12 +87,11 @@ public class Main{
                 return;
             }
 
-
             //começar o serviço
             io.grpc.Server svc = ServerBuilder
-                .forPort(myPort)
-                .addService(new ServiceClient(dockerClient, hostConfig))
-                .build();
+                    .forPort(myPort)
+                    .addService(new ServiceClient(dockerClient,hostConfig))
+                    .build();
             svc.start();
             System.out.println("Server started, listening on " + myPort);
 

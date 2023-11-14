@@ -1,5 +1,6 @@
 package org.example;
 
+import ClienteServiceServerStub.Id;
 import ClienteServiceServerStub.Image;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
@@ -23,15 +24,18 @@ public class StreamObserverImage implements StreamObserver<Image> {
 
     private String keywords;
     private String imageName;
+    private StreamObserver<Id> responseObserver;
     private final List<byte[]> bytesList = new ArrayList<>();
 
     public StreamObserverImage(Map<Integer, ImageContainer> imageContainerMap, int counterId,
-                               DockerClient dockerClient, HostConfig hostconfig) {
+                               DockerClient dockerClient, HostConfig hostconfig,
+                               StreamObserver<Id> responseObserver) {
 
         this.imageContainerMap = imageContainerMap;
         this.counterId = counterId;
         this.dockerClient = dockerClient;
         this.hostConfig = hostconfig;
+        this.responseObserver = responseObserver;
     }
 
     public boolean isCompleted() {
@@ -67,6 +71,7 @@ public class StreamObserverImage implements StreamObserver<Image> {
             throw new RuntimeException(e);
         }
 
+
         //criar e correr container para marcar a imagem recebida
         CreateContainerResponse containerResponse = dockerClient
                 .createContainerCmd("tp1:markimage")
@@ -83,5 +88,8 @@ public class StreamObserverImage implements StreamObserver<Image> {
         imageContainerMap.put(counterId, new ImageContainer(imageName,inspectContainerResponse));
 
         isCompleted = true;
+
+        responseObserver.onNext(Id.newBuilder().setId(counterId).build());
+        responseObserver.onCompleted();
     }
 }

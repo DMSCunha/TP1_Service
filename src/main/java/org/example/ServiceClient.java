@@ -58,7 +58,7 @@ public class ServiceClient extends ClientServiceGrpc.ClientServiceImplBase {
     public StreamObserver<Image> sendImage(StreamObserver<Id> responseObserver) {
 
         //send StreamObserver
-        return new StreamObserverImage(imageContainerMap,counterId++,dockerClient,hostconfig);
+        return new StreamObserverImage(imageContainerMap,counterId++,dockerClient,hostconfig, responseObserver);
     }
 
     @Override
@@ -88,14 +88,6 @@ public class ServiceClient extends ClientServiceGrpc.ClientServiceImplBase {
         //partir a image em chuncks
             //divide image by 4
         List<byte[]> byteList= divideArray(imageData, 4);
-
-        /*
-        //transform byte list in byteString
-        ByteString byteSeq0 = ByteString.copyFrom(byteList.get(0));
-        ByteString byteSeq1 = ByteString.copyFrom(byteList.get(1));
-        ByteString byteSeq2 = ByteString.copyFrom(byteList.get(2));
-        ByteString byteSeq3 = ByteString.copyFrom(byteList.get(3));
-         */
 
         //enviar os chuncks
         for(int i = 0; i < 4; i++){
